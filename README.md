@@ -7,13 +7,13 @@
 
 ## Bonus 1: Undo
 
-To support undoing task changes, I extended the `State` object with a `past: Task[][]` history stack alongside `tasks` and `filter`. Every action that modifies tasks (`add`, `advance`, `remove`, and `clearDone`) pushes the previous `tasks` array onto `past` before computing the next state, whereas `setFilter` leaves `past` untouched so filter changes are not undoable. Dispatching `{ type: 'undo' }` pops the most recent snapshot from `past` back into `tasks`, and the Undo button is disabled whenever `past` is empty.
+To undo task changes, I added a `past: Task[][]` array to the `State` object next to `tasks` and `filter`. When an action changes tasks (`add`, `advance`, `remove`, or `clearDone`), the reducer saves the old `tasks` list into `past` before making the new state. However, `setFilter` does not change `past`, so filter changes cannot be undone. When we dispatch `{ type: 'undo' }`, the reducer takes the last saved list from `past` and puts it back into `tasks`. Also, the Undo button is disabled when `past` is empty.
 
 ---
 
 ## Bonus 2: Tests
 
-Automated unit tests are implemented in `src/taskReducer.test.ts` using Vitest (`npm test`), covering all reducer actions, three-step status cycling, immutability checks with `Object.freeze`, undo behavior, and edge cases for `filterTasks` and `countByFilter`.
+I wrote unit tests in `src/taskReducer.test.ts` using Vitest (`npm test`). The tests check all reducer actions, the three-step status change, state immutability with `Object.freeze`, the undo feature, and edge cases for `filterTasks` and `countByFilter`.
 
 ```text
 > task-manager-assignment3@0.0.0 test
@@ -37,6 +37,7 @@ Automated unit tests are implemented in `src/taskReducer.test.ts` using Vitest (
       Tests  8 passed (8)
 
 ## Bonus 3: Explain your reducer
+```
 
 A reducer must be a pure function. React checks if the state object is new or the same to update the screen. If a reducer changes the old state directly and returns it, React thinks nothing changed. Then, React does not update the screen, and features like Undo stop working. Returning new objects and arrays helps React update the screen correctly and makes fixing bugs easier.
 
@@ -47,5 +48,6 @@ We calculate `filteredTasks` and filter counts during render with `filterTasks` 
 Finally, putting `filter` and `tasks` together in the reducer state makes the code easy to follow and test. Now, `taskReducer` keeps all the app's logic in one clean place instead of in different hooks.
 
 ## Bonus 4: Git repository
+```
 
 https://github.com/hanzadedemirtas/mis233-assignment3
